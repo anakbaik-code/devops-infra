@@ -43,4 +43,19 @@ services:
       - app-backend-2
       - app-backend-3
     restart: always
-  
+  github-runner:
+    image: myoung34/github-runner:latest
+    container_name: github-runner-lokal
+    restart: always
+    environment:
+      - REPO_URL=https://github.com/anakbaik-code/devops-backend
+      - RUNNER_TOKEN=ISI_TOKEN_DARI_GITHUB_DISINI
+      - RUNNER_NAME=docker-compose-runner
+      - RUNNER_WORKDIR=/tmp/github-runner
+    volumes:
+      # PENTING: Mount docker socket agar runner bisa jalankan perintah docker di host
+      - /var/run/docker.sock:/var/run/docker.sock
+      - runner-data:/tmp/github-runner
+
+volumes:
+  runner-data:
