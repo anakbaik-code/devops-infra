@@ -1,0 +1,46 @@
+x-version: "3.8"
+
+services:
+  # ----------------------------------------------------------------------------
+  # FRONTEND
+  # ----------------------------------------------------------------------------
+  app-frontend:
+    build:
+      context: ../frontend  # 1. Docker bakal cari Dockerfile di folder ./frontend
+    container_name: fe-app # 2. Nama container ketika jalan nanti
+    restart: always        # 3. Kalo container mati/crash, Docker bakal nyalain lagi otomatis
+
+  # ----------------------------------------------------------------------------
+  # GO BACKEND CLUSTER (LOAD BALANCED)
+  # ----------------------------------------------------------------------------
+  app-backend-1:
+    build:
+      context: ../backend
+    container_name: app-backend-1
+    restart: always
+  app-backend-2:
+    build:
+      context: ../backend
+    container_name: app-backend-2
+    restart: always
+  app-backend-3:
+    build:
+      context: ../backend
+    container_name: app-backend-3
+    restart: always
+  # ----------------------------------------------------------------------------
+  # NGINX REVERSE PROXY & LOAD BALANCER
+  # ----------------------------------------------------------------------------
+  nginx-proxy:
+    build:
+      context: ./nginx     # 1. Docker bakal cari Dockerfile di folder ./nginx
+    container_name: nginx-gateway
+    ports:
+      - "80:80"            # 2. Buka akses dari luar (Laptop kamu port 80 -> Container Nginx port 80)
+    depends_on:
+      - app-frontend       # 3. Nginx HANYA bakal nyala KALAU app-frontend udah nyala duluan
+      - app-backend-1
+      - app-backend-2
+      - app-backend-3
+    restart: always
+  

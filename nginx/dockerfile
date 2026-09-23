@@ -1,0 +1,6 @@
+FROM nginx:alpine-slim
+
+# Hapus config default, pakai config proxy buatan sendiri
+RUN rm /etc/nginx/conf.d/default.conf
+COPY . /etc/nginx/
+EXPOSE 80
