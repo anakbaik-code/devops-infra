@@ -9,23 +9,29 @@ on:
       - main
 
 jobs:
-  validate:
-    name: Validate Infrastructure
+  build-test:
+    name: Build & Test Nginx
     runs-on: self-hosted
 
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Test Syntax
+      - name: Build Nginx Image
+        run: |
+          docker build \
+            -t ${{ secrets.DOCKERHUB_USERNAME }}/my-nginx-proxy:test \
+            .
+
+      - name: Test Nginx Configuration
         run: |
           docker run --rm \
-            -v ${{ github.workspace }}/nginx/conf.d/default.conf:/etc/nginx/conf.d/default.conf \
-            nginx:alpine nginx -t
+            ${{ secrets.DOCKERHUB_USERNAME }}/my-nginx-proxy:test \
+            nginx -t
 
-  build-image:
+  build-push:
     name: Build & Push Image
-    needs: validate
+    needs: build-test
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: self-hosted
 
@@ -41,7 +47,7 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      
+
       - name: Extract Metadata
         id: meta
         uses: docker/metadata-action@v5
@@ -49,7 +55,7 @@ jobs:
           images: ${{ secrets.DOCKERHUB_USERNAME }}/my-nginx-proxy
           tags: |
             type=sha,format=short
-            type=raw,value=latest 
+            type=raw,value=latest
 
       - name: Build and Push Docker Image
         uses: docker/build-push-action@v6
