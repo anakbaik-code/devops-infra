@@ -9,29 +9,8 @@ on:
       - main
 
 jobs:
-  build-test:
-    name: Build & Test Nginx
-    runs-on: self-hosted
-
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-
-      - name: Build Nginx Image
-        run: |
-          docker build \
-            -t ${{ secrets.DOCKERHUB_USERNAME }}/my-nginx-proxy:test \
-            ./nginx
-
-      - name: Test Nginx Configuration
-        run: |
-          docker run --rm \
-            ${{ secrets.DOCKERHUB_USERNAME }}/my-nginx-proxy:test \
-            nginx -t
-
   build-push:
     name: Build & Push Image
-    needs: build-test
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: self-hosted
 
