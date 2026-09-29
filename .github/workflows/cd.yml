@@ -2,8 +2,8 @@ name: CD-Infra
 
 on:
   repository_dispatch:
-    types:
-      - deploy
+    types: [deploy]
+    
 jobs:
   deploy:
     name: Deploy to Server
