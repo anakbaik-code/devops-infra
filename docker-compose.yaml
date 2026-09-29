@@ -6,8 +6,8 @@ services:
   # ----------------------------------------------------------------------------
   app-frontend:
     image: alive38/devops-frontend
-    container_name:  app-frontend # 2. Nama container ketika jalan nanti
-    restart: always        # 3. Kalo container mati/crash, Docker bakal nyalain lagi otomatis
+    container_name: app-frontend # 2. Nama container ketika jalan nanti
+    restart: always # 3. Kalo container mati/crash, Docker bakal nyalain lagi otomatis
 
   # ----------------------------------------------------------------------------
   # GO BACKEND CLUSTER (LOAD BALANCED)
@@ -18,14 +18,20 @@ services:
     image: alive38/my-go-app
     container_name: app-backend-1
     restart: always
+    env_file:
+      - .env
   app-backend-2:
     image: alive38/my-go-app
     container_name: app-backend-2
     restart: always
+    env_file:
+      - .env
   app-backend-3:
     image: alive38/my-go-app
     container_name: app-backend-3
     restart: always
+    env_file:
+      - .env
   # ----------------------------------------------------------------------------
   # NGINX REVERSE PROXY & LOAD BALANCER
   # ----------------------------------------------------------------------------
@@ -33,9 +39,9 @@ services:
     image: alive38/my-nginx-proxy # 1. Docker bakal cari Dockerfile di folder ./nginx
     container_name: nginx-gateway
     ports:
-      - "80:80"            # 2. Buka akses dari luar (Laptop kamu port 80 -> Container Nginx port 80)
+      - "80:80" # 2. Buka akses dari luar (Laptop kamu port 80 -> Container Nginx port 80)
     depends_on:
-      - app-frontend       # 3. Nginx HANYA bakal nyala KALAU app-frontend udah nyala duluan
+      - app-frontend # 3. Nginx HANYA bakal nyala KALAU app-frontend udah nyala duluan
       - app-backend-1
       - app-backend-2
       - app-backend-3

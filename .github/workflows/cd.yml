@@ -18,6 +18,12 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+          
+      - name: Create Backend ENV
+        env:
+          BACKEND_ENV: ${{ secrets.BACKEND_ENV }}
+        run: |
+          printf '%s\n' "$BACKEND_ENV" > .env
 
       - name: Pull Latest Images
         run: docker compose pull
