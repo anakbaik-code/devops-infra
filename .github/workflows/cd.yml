@@ -3,7 +3,8 @@ name: CD-Infra
 on:
   repository_dispatch:
     types: [deploy]
-    
+  workflow_dispatch: 
+  
 jobs:
   deploy:
     name: Deploy to Server
