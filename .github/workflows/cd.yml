@@ -36,7 +36,7 @@ jobs:
       
       - name: Deploy-Backend
         env:
-          PORT : ${{ vars.PORT }}
+          PORT : ${{ vars.BACKEND_PORT }}
         run: |
           docker compose up -d app-backend-1 app-backend-2 app-backend-3
       

@@ -17,23 +17,24 @@ services:
     image: alive38/my-go-app
     restart: always
     environment:
-      PORT: ${PORT}
+      PORT: ${BACKEND_PORT}
   app-backend-2:
     container_name: app-backend-2
     image: alive38/my-go-app
     restart: always
     environment:
-      PORT: ${PORT}
+      PORT: ${BACKEND_PORT}
   app-backend-3:
     container_name: app-backend-3
     image: alive38/my-go-app
     restart: always
     environment:
-      PORT: ${PORT}
+      PORT: ${BACKEND_PORT}
   # ----------------------------------------------------------------------------
   # NGINX REVERSE PROXY & LOAD BALANCER
   # ----------------------------------------------------------------------------
   nginx-proxy:
+    container_name: nginx-proxy
     image: alive38/my-nginx-proxy # 1. Docker bakal cari Dockerfile di folder ./nginx
     ports:
       - "80:80"            # 2. Buka akses dari luar (Laptop kamu port 80 -> Container Nginx port 80)
@@ -41,5 +42,5 @@ services:
     depends_on:
       - app-frontend
       - app-backend-1
-      - app-baakend-2
+      - app-backend-2
       - app-backend-3
