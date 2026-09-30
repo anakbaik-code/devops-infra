@@ -1,31 +1,46 @@
 name: CD-Infra
 
 on:
-  workflow_run:
-    workflows:
-      - CI-Infra
+  repository_dispatch: 
     types:
-      - completed
-    branches:
-      - main
+      - deploy
+
+# Mencegah 2 deployment production berjalan bersamaan
+concurrency:
+  group: production-deployment
+  cancel-in-progress: false
 
 jobs:
   deploy:
-    name: Deploy Infrastructure
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    name: Deploy Application
     runs-on: self-hosted
+    environment: Production
 
     steps:
-      - name: Checkout Code
+      - name: Checkout Infra
         uses: actions/checkout@v4
 
-      - name: Deploy Nginx
+      - name: Login Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      
+      - name: Pull Image
         run: |
-          docker compose \
-            up -d \
-            --pull always \
-            nginx-proxy
+          docker compose pull
+      
+      - name: Deploy-Fontend
+        run: |
+          docker compose up -d app-frontend
+      
+      - name: Deploy-Backend
+        env:
+          PORT : ${{ vars.PORT }}
+        run: |
+          docker compose up -d app-backend-1 app-backend-2 app-backend-3
+      
+      - name: Docker Check
+        run: |
+          docker compose ps      
 
-      - name: Check Nginx
-        run: |
-          docker compose ps nginx-proxy
