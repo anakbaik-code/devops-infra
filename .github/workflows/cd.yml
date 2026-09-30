@@ -40,6 +40,10 @@ jobs:
         run: |
           docker compose up -d app-backend-1 app-backend-2 app-backend-3
       
+      - name: Deploy-Nginx
+        run: |
+          docker compose up -d nginx-proxy
+          
       - name: Docker Check
         run: |
           docker compose ps      
